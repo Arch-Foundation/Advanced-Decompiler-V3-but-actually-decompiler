@@ -472,10 +472,11 @@ local function Decompile(bytecode)
 					local starterCount
 					if isUpvalue then
 						starterCount = 0
+						return `v_u_{starterCount + depth + register - protoNumParams}`, true
 					else
 						starterCount = totalVars
+						return `v{starterCount + depth + register - protoNumParams}`, true
 					end
-					return `v{starterCount + depth + register - protoNumParams}`, true
 				end
 			end
 
