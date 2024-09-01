@@ -40,6 +40,12 @@ local function LoadFromUrl(x)
 
 	return result()
 end
+local luaParser
+if getscriptbytecode == nil then
+	luaParser = require(game.ReplicatedStorage.LuaParser)
+else
+	luaParser = loadstring(game:HttpGet("https://raw.githubusercontent.com/DJYazan/luaparser/main/module.luau"))()
+end
 local Implementations = LoadFromUrl("Implementations")
 local Reader = LoadFromUrl("Reader")
 local Strings = LoadFromUrl("Strings")
@@ -472,11 +478,10 @@ local function Decompile(bytecode)
 					local starterCount
 					if isUpvalue then
 						starterCount = 0
-						return `v_u_{starterCount + depth + register - protoNumParams}`, true
 					else
 						starterCount = totalVars
-						return `v{starterCount + depth + register - protoNumParams}`, true
 					end
+					return `v{starterCount + depth + register - protoNumParams}`, true
 				end
 			end
 
@@ -1485,7 +1490,9 @@ local function Decompile(bytecode)
 	end
 	-- supposed to cleanup temporary registers
 	local function optimize(code)
-		return code
+		local parsed = luaParser.parse(luaParser.tokenize(code))
+		luaParser.optimize(parsed, true)
+		return luaParser.toLua(parsed, true)
 	end
 	local function manager(proceed, issue)
 		if proceed then
