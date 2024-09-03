@@ -1001,7 +1001,7 @@ local function Decompile(bytecode)
 							local endPoint = insnIndex + sD
 							createLoopPoint(insnIndex, endPoint)
 							addReference(insnIndex, endPoint)
-							protoOutput ..= string.format("if not %s then end  #%i", modifyRegister(A), endPoint)
+							protoOutput ..= string.format("if not %s then", modifyRegister(A), endPoint)
 						end
 						opConstructors["JUMPIFNOT"] = function(ignoreJump) -- inverse
 							local nextInsn = proto.insnTable[insnIndex + 2]
