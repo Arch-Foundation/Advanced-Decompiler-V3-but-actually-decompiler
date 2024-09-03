@@ -5,7 +5,19 @@
 --TODO: use letter "u" instead of "v" for upvalues
 --TODO: fix indentation and also optimize code output to return rather smooth code
 
-;;CONSTANTS HERE;;
+local ENABLED_REMARKS = {
+    NATIVE_REMARK = true,
+    INLINE_REMARK = true
+}
+local DECOMPILER_TIMEOUT = 10 -- ideal?
+    
+local READER_FLOAT_PRECISION = 99 -- up to 99
+local SHOW_INSTRUCTION_LINES = false
+local SHOW_REFERENCES = true
+local SHOW_OPERATION_NAMES = false
+local SHOW_MISC_OPERATIONS = true
+local LIST_USED_GLOBALS = true
+local RETURN_ELAPSED_TIME = false
 
 -- TEMPORARY
 local POINT_TYPE_END = 0
