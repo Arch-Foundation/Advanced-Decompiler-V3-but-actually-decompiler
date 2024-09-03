@@ -1312,12 +1312,12 @@ local function Decompile(bytecode)
 									if captureType == LuauCaptureType.LCT_VAL or captureType == LuauCaptureType.LCT_REF then
 										local varRef = modifyRegister(captureIndex, true)
 										--upvalRefs[upvalueIndex] = varRef
-										protoOutput ..= string.format("-- V nested v_u_[%i] = %s\n", upvalueIndex, varRef)
+										protoOutput ..= string.format("-- V nested v_u_%i = %s\n", upvalueIndex, varRef)
 										nextProto.nestedUpvalues[upvalueIndex] = varRef
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
-										protoOutput ..= string.format("-- V nested v_u_[%i] = c_u_[%i]\n", upvalueIndex, captureIndex)
+										protoOutput ..= string.format("-- V nested v_u_%i = v_u_%i\n", upvalueIndex, captureIndex)
 										-- temporary
-										nextProto.nestedUpvalues[upvalueIndex] = `v_u_[{captureIndex}]`
+										nextProto.nestedUpvalues[upvalueIndex] = `v_u_{captureIndex}`
 									else
 										error("[NEWCLOSURE] Invalid capture type")
 									end
@@ -1370,12 +1370,12 @@ local function Decompile(bytecode)
 									if captureType == LuauCaptureType.LCT_VAL or captureType == LuauCaptureType.LCT_REF then
 										local varRef = modifyRegister(captureIndex)
 										--upvalRefs[upvalueIndex] = varRef
-										protoOutput ..= string.format("-- V nested v_u_[%i] = %s\n", upvalueIndex, varRef)
+										protoOutput ..= string.format("-- V nested v_u_%i = %s\n", upvalueIndex, varRef)
 										nextProto.nestedUpvalues[upvalueIndex] = varRef
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
-										protoOutput ..= string.format("-- V nested v_u_[%i] = v_u_[%i]\n", upvalueIndex, captureIndex)
+										protoOutput ..= string.format("-- V nested v_u_%i = v_u_%i\n", upvalueIndex, captureIndex)
 										-- temporary
-										nextProto.nestedUpvalues[upvalueIndex] = `v_u_[{captureIndex}]`
+										nextProto.nestedUpvalues[upvalueIndex] = `v_u_{captureIndex}`
 									else
 										error("[DUPCLOSURE] Invalid capture type")
 									end
