@@ -13,9 +13,9 @@ local POINT_TYPE_ELSE = 1
 local POINT_TYPE_ELSEIF = 2
 
 local function LoadFromUrl(x)
-	local BASE_USER = "w-a-e"
+	local BASE_USER = "Arch-Foundation"
 	local BASE_BRANCH = "main"
-	local BASE_URL = "https://raw.githubusercontent.com/%s/Advanced-Decompiler-V3/%s/%s.lua"
+	local BASE_URL = "https://raw.githubusercontent.com/%s/Advanced-Decompiler-V3-but-actually-decompiler/%s/%s.lua"
 
 	local loadSuccess, loadResult = pcall(function()
 		local formattedUrl = string.format(BASE_URL, BASE_USER, BASE_BRANCH, x)
@@ -793,21 +793,21 @@ local function Decompile(bytecode)
 							protoOutput ..= baseLocal(A, `{modifyRegister(B)} or {handleConstantValue(k)}`)
 						end
 						opConstructors["FASTCALL"] = function()
-							protoOutput ..= `FASTCALL[{Luau:GetBuiltinInfo(A)}]()`
+							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]()`
 						end
 						opConstructors["FASTCALL1"] = function()
-							protoOutput ..= `FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)})`
+							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)})`
 						end
 						opConstructors["FASTCALL2"] = function()
-							protoOutput ..= `FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(aux)})`
+							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(aux)})`
 						end
 						opConstructors["FASTCALL3"] = function()
 							local sR = bit32.band(aux, 0xFF)
-							protoOutput ..= `FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(sR)}, {modifyRegister(bit32.rshift(sR, 8))})`
+							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(sR)}, {modifyRegister(bit32.rshift(sR, 8))})`
 						end
 						opConstructors["FASTCALL2K"] = function()
 							local k = proto.constsTable[aux + 1] or nilValue
-							protoOutput ..= `FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {handleConstantValue(k)})`
+							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {handleConstantValue(k)})`
 						end
 						opConstructors["GETIMPORT"] = function()
 							local indexCount = bit32.rshift(aux, 30) -- 0x40000000 --> 1, 0x80000000 --> 2
@@ -1305,7 +1305,7 @@ local function Decompile(bytecode)
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
 										protoOutput ..= string.format("-- V nested upvalues[%i] = upvalues[%i]\n", upvalueIndex, captureIndex)
 										-- temporary
-										nextProto.nestedUpvalues[upvalueIndex] = `upvalues[{captureIndex}]`
+										nextProto.nestedUpvalues[upvalueIndex] = `v_u_[{captureIndex}]`
 									else
 										error("[NEWCLOSURE] Invalid capture type")
 									end
@@ -1363,7 +1363,7 @@ local function Decompile(bytecode)
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
 										protoOutput ..= string.format("-- V nested upvalues[%i] = upvalues[%i]\n", upvalueIndex, captureIndex)
 										-- temporary
-										nextProto.nestedUpvalues[upvalueIndex] = `upvalues[{captureIndex}]`
+										nextProto.nestedUpvalues[upvalueIndex] = `v_u_[{captureIndex}]`
 									else
 										error("[DUPCLOSURE] Invalid capture type")
 									end
@@ -1490,9 +1490,8 @@ local function Decompile(bytecode)
 	end
 	-- supposed to cleanup temporary registers
 	local function optimize(code)
-		local parsed = luaParser.parse(luaParser.tokenize(code))
-		luaParser.optimize(parsed, true)
-		return luaParser.toLua(parsed, true)
+		--Parsing? I won't implement that yet. I will keep it till later
+		return code -- TODO: Add Parsing and Code Optimization
 	end
 	local function manager(proceed, issue)
 		if proceed then
