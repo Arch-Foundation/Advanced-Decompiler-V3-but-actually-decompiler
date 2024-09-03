@@ -1312,10 +1312,10 @@ local function Decompile(bytecode)
 									if captureType == LuauCaptureType.LCT_VAL or captureType == LuauCaptureType.LCT_REF then
 										local varRef = modifyRegister(captureIndex, true)
 										--upvalRefs[upvalueIndex] = varRef
-										protoOutput ..= string.format("-- V nested upvalues[%i] = %s\n", upvalueIndex, varRef)
+										protoOutput ..= string.format("-- V nested v_u_[%i] = %s\n", upvalueIndex, varRef)
 										nextProto.nestedUpvalues[upvalueIndex] = varRef
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
-										protoOutput ..= string.format("-- V nested upvalues[%i] = upvalues[%i]\n", upvalueIndex, captureIndex)
+										protoOutput ..= string.format("-- V nested v_u_[%i] = c_u_[%i]\n", upvalueIndex, captureIndex)
 										-- temporary
 										nextProto.nestedUpvalues[upvalueIndex] = `v_u_[{captureIndex}]`
 									else
@@ -1370,10 +1370,10 @@ local function Decompile(bytecode)
 									if captureType == LuauCaptureType.LCT_VAL or captureType == LuauCaptureType.LCT_REF then
 										local varRef = modifyRegister(captureIndex)
 										--upvalRefs[upvalueIndex] = varRef
-										protoOutput ..= string.format("-- V nested upvalues[%i] = %s\n", upvalueIndex, varRef)
+										protoOutput ..= string.format("-- V nested v_u_[%i] = %s\n", upvalueIndex, varRef)
 										nextProto.nestedUpvalues[upvalueIndex] = varRef
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
-										protoOutput ..= string.format("-- V nested upvalues[%i] = upvalues[%i]\n", upvalueIndex, captureIndex)
+										protoOutput ..= string.format("-- V nested v_u_[%i] = v_u_[%i]\n", upvalueIndex, captureIndex)
 										-- temporary
 										nextProto.nestedUpvalues[upvalueIndex] = `v_u_[{captureIndex}]`
 									else
@@ -1460,7 +1460,7 @@ local function Decompile(bytecode)
 						if pointType == POINT_TYPE_ELSE then
 							if hasElse then
 								-- can't handle it right now, mark as an addition to previous if then
-								pointResult = "and (else)"
+								pointResult = "and"
 							else
 								hasElse = true
 								pointResult = "else"
