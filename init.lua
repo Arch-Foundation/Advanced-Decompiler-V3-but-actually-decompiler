@@ -805,21 +805,21 @@ local function Decompile(bytecode)
 							protoOutput ..= baseLocal(A, `{modifyRegister(B)} or {handleConstantValue(k)}`)
 						end
 						opConstructors["FASTCALL"] = function()
-							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]()`
+							protoOutput ..= `[{Luau:GetBuiltinInfo(A)}]()`
 						end
 						opConstructors["FASTCALL1"] = function()
-							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)})`
+							protoOutput ..= `[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)})`
 						end
 						opConstructors["FASTCALL2"] = function()
-							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(aux)})`
+							protoOutput ..= `[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(aux)})`
 						end
 						opConstructors["FASTCALL3"] = function()
 							local sR = bit32.band(aux, 0xFF)
-							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(sR)}, {modifyRegister(bit32.rshift(sR, 8))})`
+							protoOutput ..= `[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {modifyRegister(sR)}, {modifyRegister(bit32.rshift(sR, 8))})`
 						end
 						opConstructors["FASTCALL2K"] = function()
 							local k = proto.constsTable[aux + 1] or nilValue
-							protoOutput ..= `--FASTCALL[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {handleConstantValue(k)})`
+							protoOutput ..= `[{Luau:GetBuiltinInfo(A)}]({modifyRegister(B)}, {handleConstantValue(k)})`
 						end
 						opConstructors["GETIMPORT"] = function()
 							local indexCount = bit32.rshift(aux, 30) -- 0x40000000 --> 1, 0x80000000 --> 2
@@ -906,7 +906,7 @@ local function Decompile(bytecode)
 								end
 							end
 
-							protoOutput ..= `for {regStr} in {modifyRegister(A)} do -- [escape at #{endInsnIndex}]`
+							protoOutput ..= `for {regStr} in {modifyRegister(A)} do`
 						end
 						opConstructors["FORGLOOP"] = function()
 							local respectsArrayOrder = toboolean(bit32.rshift(aux, 0x1F))
@@ -927,7 +927,7 @@ local function Decompile(bytecode)
 								end
 							end
 
-							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do -- [escape at #{endInsnIndex}] (ipairs)`
+							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do`
 						end
 						opConstructors["DEP_FORGLOOP_INEXT"] = function()
 							local endInsnIndex = insnIndex + sD + 1
@@ -944,7 +944,7 @@ local function Decompile(bytecode)
 								end
 							end
 
-							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do -- [escape at #{endInsnIndex}] (ipairs) DEPRECATED`
+							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do`
 						end
 						opConstructors["FORGPREP_NEXT"] = function()
 							local endInsnIndex = insnIndex + sD + 1
@@ -961,7 +961,7 @@ local function Decompile(bytecode)
 								end
 							end
 
-							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do -- [escape at #{endInsnIndex}] (pairs/next)`
+							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do`
 						end
 						opConstructors["DEP_FORGLOOP_NEXT"] = function()
 							local endInsnIndex = insnIndex + sD + 1
@@ -978,7 +978,7 @@ local function Decompile(bytecode)
 								end
 							end
 
-							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do -- [escape at #{endInsnIndex}] (pairs/next) DEPRECATED`
+							protoOutput ..= `for {regStr} in {modifyRegister(A)}({modifyRegister(A + 1)}) do`
 						end
 						opConstructors["JUMP"] = function()
 							local endPoint = insnIndex + sD
