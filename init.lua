@@ -82,7 +82,13 @@ local isGlobal = Implementations.isGlobal
 
 Reader:Set(READER_FLOAT_PRECISION)
 
-local function Decompile(bytecode)
+local function Decompile(bytecode, opt)
+		opt = opt = {
+			VariableName = 'v',
+			UpvalueName = 'u',
+			ParameterName = 'p'
+			
+		}
 	local bytecodeVersion, typeEncodingVersion
 	--
 	local reader = Reader.new(bytecode)
@@ -485,7 +491,7 @@ local function Decompile(bytecode)
 			local function modifyRegister(register, isUpvalue)
 				-- parameter registers are preallocated
 				if register < protoNumParams then
-					return `p{(totalParams - protoNumParams) + register + 1}`
+					return `{opt.ParameterName}{(totalParams - protoNumParams) + register + 1}`
 				else
 					local starterCount
 					if isUpvalue then
@@ -493,7 +499,7 @@ local function Decompile(bytecode)
 					else
 						starterCount = totalVars
 					end
-					return `v{starterCount + depth + register - protoNumParams}`, true
+					return `{opt.VariableName}{starterCount + depth + register - protoNumParams}`, true
 				end
 			end
 
@@ -678,7 +684,7 @@ local function Decompile(bytecode)
 					if SHOW_INSTRUCTION_LINES then
 						local instructionLine = proto.smallLineInfo[insnIndex]
 						local instructionLargeLine = proto.largeLineInfo[insnIndex]
-						lineStr ..= `[line {instructionLargeLine + instructionLine}] `
+						lineStr ..= `--[line {instructionLargeLine + instructionLine}] `
 					end
 
 					protoOutput ..= lineStr
@@ -1276,6 +1282,7 @@ local function Decompile(bytecode)
 								captureType = "REF"
 							end
 							protoOutput ..= string.format("--CAPTURE %s %s%d\n", captureType, if captureType == "UPVAL" then "U" else "R", B)
+							protoOutput ..= `-- capture {baseLocal(B)} ({if captureType == "UPVAL" then 'upvalue' elseif captureType == 'REF' then "ref" elseif captureType == 'VAL' then 'val'})`
 						end
 						opConstructors["SUBRK"] = function()
 							local k = proto.constsTable[B + 1] or nilValue
@@ -1312,12 +1319,13 @@ local function Decompile(bytecode)
 									if captureType == LuauCaptureType.LCT_VAL or captureType == LuauCaptureType.LCT_REF then
 										local varRef = modifyRegister(captureIndex, true)
 										--upvalRefs[upvalueIndex] = varRef
-										protoOutput ..= string.format("-- V nested v_u_%i = %s\n", upvalueIndex, varRef)
+										protoOutput ..= string.format("-- Nested Upvalue:  %s %i = %s\n", opt.UpvalueName, upvalueIndex, varRef)
 										nextProto.nestedUpvalues[upvalueIndex] = varRef
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
-										protoOutput ..= string.format("-- V nested v_u_%i = v_u_%i\n", upvalueIndex, captureIndex)
+										--protoOutput ..= string.format("-- v_u_%i = v_u_%i\n", upvalueIndex, captureIndex)
+										protoOutput..= `-- Nested Upvalue: {opt.UpvalueName}{upvalueIndex} = {opt.UpvalueName}{captureIndex}`
 										-- temporary
-										nextProto.nestedUpvalues[upvalueIndex] = `v_u_{captureIndex}`
+										nextProto.nestedUpvalues[upvalueIndex] = `{opt.UpvalueName}{captureIndex}`
 									else
 										error("[NEWCLOSURE] Invalid capture type")
 									end
@@ -1370,12 +1378,12 @@ local function Decompile(bytecode)
 									if captureType == LuauCaptureType.LCT_VAL or captureType == LuauCaptureType.LCT_REF then
 										local varRef = modifyRegister(captureIndex)
 										--upvalRefs[upvalueIndex] = varRef
-										protoOutput ..= string.format("-- V nested v_u_%i = %s\n", upvalueIndex, varRef)
+										protoOutput ..= string.format("-- Nested Upvalue:  %s %i = %s\n", opt.UpvalueName, upvalueIndex, varRef)
 										nextProto.nestedUpvalues[upvalueIndex] = varRef
 									elseif captureType == LuauCaptureType.LCT_UPVAL then
-										protoOutput ..= string.format("-- V nested v_u_%i = v_u_%i\n", upvalueIndex, captureIndex)
+										protoOutput..= `-- Nested Upvalue: {opt.UpvalueName}{upvalueIndex} = {opt.UpvalueName}{captureIndex}`
 										-- temporary
-										nextProto.nestedUpvalues[upvalueIndex] = `v_u_{captureIndex}`
+										nextProto.nestedUpvalues[upvalueIndex] = `{opt.UpvalueName}{captureIndex}`
 									else
 										error("[DUPCLOSURE] Invalid capture type")
 									end
